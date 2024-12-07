@@ -42,7 +42,9 @@ function App(): React.JSX.Element {
         {isLoggedIn ? (
           <>
             <Stack.Screen name="Home" component={HomeScreen} />
-            <Stack.Screen name="Account" component={AccountScreen} />
+            <Stack.Screen name="Account">
+              {(props) => <AccountScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
+            </Stack.Screen>
           </>
         ) : (
           <Stack.Screen name="Login">
