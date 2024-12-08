@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{ useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -10,9 +10,51 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const HomeScreen = () => {
+  const [sleep, setSleep] = useState('-');
+  const [sleepLastUpdated, setSleepLastUpdated] = useState('');
+  const [steps, setSteps] = useState('-');
+  const [stepsLastUpdated, setStepsLastUpdated] = useState('');
+  const [bmi, setBmi] = useState('-');
+  const [bmiLastUpdated, setBmiLastUpdated] = useState('');
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      loadHealthData();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
+  const loadHealthData = async () => {
+    try {
+      const storedSteps = await AsyncStorage.getItem('steps');
+      const stepsUpdated = await AsyncStorage.getItem('stepsLastUpdated');
+      const storedBMI = await AsyncStorage.getItem('bmi');
+      const bmiUpdated = await AsyncStorage.getItem('bmiLastUpdated');
+      const storedSleep = await AsyncStorage.getItem('sleep');
+      const sleepUpdated = await AsyncStorage.getItem('sleepLastUpdated');
+
+      if (storedSteps) {
+        setSteps(storedSteps);
+        setStepsLastUpdated(stepsUpdated ? 'Updated' : '');
+      }
+      if (storedBMI) {
+        setBmi(storedBMI);
+        setBmiLastUpdated(bmiUpdated ? 'Updated' : '');
+      }
+      if (storedSleep) {
+        setSleep(storedSleep);
+        setSleepLastUpdated(sleepUpdated ? 'Updated' : '');
+      }
+    } catch (error) {
+      console.error('Error loading health data:', error);
+    }
+  };
 
   const renderHealthScore = () => (
     <View style={styles.scoreContainer}>
@@ -67,23 +109,47 @@ const HomeScreen = () => {
   const renderHealthOverview = () => (
     <View style={styles.overviewSection}>
       <Text style={styles.sectionTitle}>Health Overview</Text>
-      <View style={styles.overviewCards}>
-        <TouchableOpacity style={[styles.overviewCard, styles.stepsCard]}>
+      <ScrollView 
+        horizontal 
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.overviewCards}
+      >
+        <TouchableOpacity 
+          style={[styles.overviewCard, styles.stepsCard]}
+          onPress={() => navigation.navigate('Steps')}
+        >
           <Text style={styles.overviewLabel}>Steps</Text>
-          <Text style={styles.overviewValue}>12,000</Text>
-          <Text style={styles.overviewUpdated}>Updated</Text>
+          <Text style={styles.overviewValue}>{steps}</Text>
+          <Text style={styles.overviewUpdated}>{stepsLastUpdated}</Text>
           <Icon name="chevron-forward" size={20} color="#666" style={styles.cardArrow} />
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.overviewCard, styles.bmiCard]}>
+
+        <TouchableOpacity 
+          style={[styles.overviewCard, styles.bmiCard]}
+          onPress={() => navigation.navigate('BMI')}
+        >
           <Text style={styles.overviewLabel}>BMI</Text>
           <View style={styles.bmiValue}>
-            <Text style={styles.overviewValue}>22.50</Text>
+            <Text style={styles.overviewValue}>{bmi}</Text>
             <Text style={styles.bmiUnit}>kg/m²</Text>
           </View>
-          <Text style={styles.overviewUpdated}>Updated</Text>
+          <Text style={styles.overviewUpdated}>{bmiLastUpdated}</Text>
           <Icon name="chevron-forward" size={20} color="#666" style={styles.cardArrow} />
         </TouchableOpacity>
-      </View>
+
+        <TouchableOpacity 
+          style={[styles.overviewCard, styles.sleepCard]}
+          onPress={() => navigation.navigate('Sleep')}
+        >
+          <Text style={styles.overviewLabel}>Sleep</Text>
+          <View style={styles.sleepValue}>
+            <Text style={styles.overviewValue}>{sleep}</Text>
+            <Text style={styles.sleepUnit}>hours</Text>
+          </View>
+          <Text style={styles.overviewUpdated}>{sleepLastUpdated}</Text>
+          <Icon name="chevron-forward" size={20} color="#666" style={styles.cardArrow} />
+        </TouchableOpacity>
+      </ScrollView>
     </View>
   );
 
@@ -316,11 +382,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   overviewCards: {
-    flexDirection: 'row',
+    paddingHorizontal: 20,
     gap: 12,
   },
   overviewCard: {
-    flex: 1,
+    width: 150,
     padding: 16,
     borderRadius: 12,
     backgroundColor: '#fff',
@@ -336,6 +402,9 @@ const styles = StyleSheet.create({
   bmiCard: {
     backgroundColor: '#FFFBEB',
   },
+  sleepCard: {
+    backgroundColor: '#F5F0FF',
+  },
   overviewLabel: {
     fontSize: 16,
     marginBottom: 8,
@@ -348,6 +417,15 @@ const styles = StyleSheet.create({
   bmiValue: {
     flexDirection: 'row',
     alignItems: 'baseline',
+  },
+  sleepValue: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 4,
+  },
+  sleepUnit: {
+    fontSize: 12,
+    color: '#666',
   },
   bmiUnit: {
     fontSize: 12,

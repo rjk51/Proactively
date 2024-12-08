@@ -8,6 +8,7 @@ import {
   Image,
   SafeAreaView,
   Alert,
+  Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -35,9 +36,7 @@ const LoginScreen = ({ setIsLoggedIn }) => {
   const handleLogin = async () => {
     if (email === predefinedUser.email && password === predefinedUser.password) {
       try {
-        // Save user data to local storage
         await AsyncStorage.setItem('user', JSON.stringify(predefinedUser));
-        // Navigate to Home screen
         setIsLoggedIn(true);
         navigation.navigate('Home');
       } catch (error) {
@@ -49,81 +48,86 @@ const LoginScreen = ({ setIsLoggedIn }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Login to</Text>
-      <View style={styles.brandContainer}>
-        <Text style={styles.brandText}>proactively</Text>
-        <Image
-          source={require('../assets/arrow.png')}
-          style={styles.arrowImage}
-        />
-      </View>
-      <Text style={styles.subtitle}>
-        Login as a patient using your registered email.
-      </Text>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={[styles.input, isEmailFocused && styles.inputFocused]}
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          onFocus={() => setIsEmailFocused(true)}
-          onBlur={() => setIsEmailFocused(false)}
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={[styles.input, isPasswordFocused && styles.inputFocused]}
-          placeholder="Password"
-          secureTextEntry={!showPassword}
-          value={password}
-          onChangeText={setPassword}
-          onFocus={() => setIsPasswordFocused(true)}
-          onBlur={() => setIsPasswordFocused(false)}
-        />
-        <TouchableOpacity
-          style={styles.togglePassword}
-          onPress={togglePasswordVisibility}
-        >
-          <Icon
-            name={showPassword ? 'eye-outline' : 'eye-off-outline'}
-            size={24}
-            color="#7F8A99"
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Login to</Text>
+        <View style={styles.brandContainer}>
+          <Text style={styles.brandText}>proactively</Text>
+          <Image
+            source={require('../assets/arrow.png')}
+            style={styles.arrowImage}
           />
+        </View>
+        <Text style={styles.subtitle}>
+          Login as a patient using your registered email.
+        </Text>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={[styles.input, isEmailFocused && styles.inputFocused]}
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            onFocus={() => setIsEmailFocused(true)}
+            onBlur={() => setIsEmailFocused(false)}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={[styles.input, isPasswordFocused && styles.inputFocused]}
+            placeholder="Password"
+            secureTextEntry={!showPassword}
+            value={password}
+            onChangeText={setPassword}
+            onFocus={() => setIsPasswordFocused(true)}
+            onBlur={() => setIsPasswordFocused(false)}
+          />
+          <TouchableOpacity
+            style={styles.togglePassword}
+            onPress={togglePasswordVisibility}
+          >
+            <Icon
+              name={showPassword ? 'eye-outline' : 'eye-off-outline'}
+              size={24}
+              color="#7F8A99"
+            />
+          </TouchableOpacity>
+        </View>
+        {error ? <Text style={styles.errorText}>{error}</Text> : null}
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+          <Text style={styles.loginButtonText}>Login</Text>
+        </TouchableOpacity>
+
+        <View style={styles.dividerContainer}>
+          <View style={styles.divider} />
+          <Text style={styles.orText}>OR</Text>
+          <View style={styles.divider} />
+        </View>
+        <TouchableOpacity style={styles.googleButton}>
+          <Image
+            source={require('../assets/google.png')}
+            style={styles.socialIcon}
+          />
+          <Text style={styles.googleButtonText}>Continue with Google</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.socialButton, styles.appleButton]}>
+          <Icon name="logo-apple" size={20} color="white" />
+          <Text style={styles.appleButtonText}>Continue with Apple</Text>
         </TouchableOpacity>
       </View>
-      {error ? <Text style={{ color: 'red', marginTop: 5 }}>{error}</Text> : null}
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginButtonText}>Login</Text>
-      </TouchableOpacity>
-
-      <View style={styles.dividerContainer}>
-        <View style={styles.divider} />
-        <Text style={styles.orText}>OR</Text>
-        <View style={styles.divider} />
-      </View>
-      <TouchableOpacity style={styles.googleButton}>
-        <Image
-          source={require('../assets/google.png')}
-          style={styles.socialIcon}
-        />
-        <Text style={styles.googleButtonText}>Continue with Google</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={[styles.socialButton, styles.appleButton]}>
-        <Icon name="logo-apple" size={20} color="white" />
-        <Text style={styles.appleButtonText}>Continue with Apple</Text>
-      </TouchableOpacity>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
+    paddingHorizontal: 20,
   },
   title: {
     fontSize: 20,
@@ -201,7 +205,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     color: '#D1D1D1',
     fontSize: 16,
-    fontWeight: 500,
+    fontWeight: '500',
   },
   googleButton: {
     flexDirection: 'row',
@@ -239,6 +243,10 @@ const styles = StyleSheet.create({
   appleButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
+  },
+  errorText: {
+    color: 'red',
+    marginTop: 5,
   },
 });
 

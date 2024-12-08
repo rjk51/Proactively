@@ -14,11 +14,17 @@ import LoginScreen from '../Proactively/src/screens/LoginScreen';
 import HomeScreen from '../Proactively/src/screens/HomeScreen';
 import AccountScreen from '../Proactively/src/screens/AccountScreen';
 import SplashScreen from 'react-native-splash-screen'
+import BMIScreen from '../Proactively/src/screens/BMIScreen';
+import StepsScreen from '../Proactively/src/screens/StepsScreen';
+import SleepScreen from '../Proactively/src/screens/SleepScreen';
 
 type RootStackParamList = {
   Login: undefined;
   Home: undefined;
   Account: undefined;
+  BMI: undefined;
+  Steps: undefined;
+  Sleep: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -45,6 +51,9 @@ function App(): React.JSX.Element {
             <Stack.Screen name="Account">
               {(props) => <AccountScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
             </Stack.Screen>
+            <Stack.Screen name="BMI" component={BMIScreen} />
+            <Stack.Screen name="Steps" component={StepsScreen} />
+            <Stack.Screen name="Sleep" component={SleepScreen} />
           </>
         ) : (
           <Stack.Screen name="Login">
