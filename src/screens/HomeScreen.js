@@ -80,7 +80,10 @@ const HomeScreen = () => {
   );
 
   const renderAppointment = () => (
-    <TouchableOpacity style={styles.appointmentCard}>
+    <TouchableOpacity 
+      style={styles.appointmentCard}
+      onPress={() => navigation.navigate('AppointmentDetails')}
+      >
       <View style={styles.appointmentHeader}>
         <View style={styles.upcomingBadge}>
           <Text style={styles.upcomingText}>UPCOMING</Text>

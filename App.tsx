@@ -17,29 +17,21 @@ import SplashScreen from 'react-native-splash-screen'
 import BMIScreen from '../Proactively/src/screens/BMIScreen';
 import StepsScreen from '../Proactively/src/screens/StepsScreen';
 import SleepScreen from '../Proactively/src/screens/SleepScreen';
+import AppointmentDetailsScreen from '../Proactively/src/screens/AppointmentDetailsScreen';
 
-type RootStackParamList = {
-  Login: undefined;
-  Home: undefined;
-  Account: undefined;
-  BMI: undefined;
-  Steps: undefined;
-  Sleep: undefined;
-};
-
-const Stack = createNativeStackNavigator<RootStackParamList>();
+const Stack = createNativeStackNavigator();
 
 function App(): React.JSX.Element {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   
   useEffect(() => {
-    const checkLogin = async () => {
+    const initialize = async () => {
       const user = await AsyncStorage.getItem('user');
-      setIsLoggedIn(!!user); // Set true if user exists
+      setIsLoggedIn(!!user);
+      SplashScreen.hide();
     };
 
-    checkLogin();
-    SplashScreen.hide()
+    initialize();
   }, []);
 
   return (
@@ -54,6 +46,7 @@ function App(): React.JSX.Element {
             <Stack.Screen name="BMI" component={BMIScreen} />
             <Stack.Screen name="Steps" component={StepsScreen} />
             <Stack.Screen name="Sleep" component={SleepScreen} />
+            <Stack.Screen name="AppointmentDetails" component={AppointmentDetailsScreen} />
           </>
         ) : (
           <Stack.Screen name="Login">
