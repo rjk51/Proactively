@@ -11,6 +11,7 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import LinearGradient from 'react-native-linear-gradient';
 
 
 const HomeScreen = () => {
@@ -21,6 +22,28 @@ const HomeScreen = () => {
   const [bmi, setBmi] = useState('-');
   const [bmiLastUpdated, setBmiLastUpdated] = useState('');
   const navigation = useNavigation();
+  const [todos, setTodos] = useState([
+    {
+      text: 'Achieve 30k steps every week for blood sugar',
+      date: 'Sep 5, 2024',
+      completed: false,
+    },
+    {
+      text: 'Take up health Coaching',
+      date: 'Sep 5, 2024',
+      completed: false,
+    },
+    {
+      text: 'Go to a nearby gym and workout for 30 mins',
+      date: 'Sep 5, 2024',
+      completed: false,
+    },
+    {
+      text: 'Complete 2 courses of Dr. Laurie Simons',
+      date: 'Aug 30, 2024',
+      completed: false,
+    },
+  ]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -56,28 +79,44 @@ const HomeScreen = () => {
     }
   };
 
-  const renderHealthScore = () => (
-    <View style={styles.scoreContainer}>
-      <Text style={styles.scoreTitle}>Health Score</Text>
-      <Text style={styles.scoreValue}>2,740</Text>
-      <Text style={styles.scoreSubtext}>
-        This score is for information purposes only.
-      </Text>
-      <View style={styles.progressContainer}>
-        <View style={styles.progressBar}>
-          <View style={[styles.progress, { width: '91.3%' }]} />
-        </View>
-        <View style={styles.progressLabels}>
-          <Text style={styles.progressLabel}>0</Text>
-          <Text style={styles.progressLabel}>600</Text>
-          <Text style={styles.progressLabel}>1200</Text>
-          <Text style={styles.progressLabel}>1800</Text>
-          <Text style={styles.progressLabel}>2400</Text>
-          <Text style={styles.progressLabel}>3000</Text>
+  const renderHealthScore = () => {
+    const healthScore = 2740;
+    const maxScore = 3000;
+    const indicatorPosition = (healthScore / maxScore) * 100;
+    return (
+      <View style={styles.scoreContainer}>
+        <Text style={styles.scoreTitle}>Health Score</Text>
+        <Text style={styles.scoreValue}>{healthScore.toLocaleString()}</Text>
+        <Text style={styles.scoreSubtext}>
+          This score is for information purposes only.
+        </Text>
+        <View style={styles.progressContainer}>
+          <View style={styles.progressBar}>
+            <LinearGradient
+              colors={['#FF9B9B', '#FFB178', '#FFD178', '#E4FF84', '#73FF73']}
+              start={{x: 0, y: 0}}
+              end={{x: 1, y: 0}}
+              style={[styles.progress]}
+            />
+          </View>
+          <View
+            style={[
+              styles.progressIndicator,
+              { left: `${indicatorPosition}%` }
+            ]}
+          />
+          <View style={styles.progressLabels}>
+            <Text style={styles.progressLabel}>0</Text>
+            <Text style={styles.progressLabel}>600</Text>
+            <Text style={styles.progressLabel}>1200</Text>
+            <Text style={styles.progressLabel}>1800</Text>
+            <Text style={styles.progressLabel}>2400</Text>
+            <Text style={styles.progressLabel}>3000</Text>
+          </View>
         </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   const renderAppointment = () => (
     <TouchableOpacity 
@@ -88,13 +127,15 @@ const HomeScreen = () => {
         <View style={styles.upcomingBadge}>
           <Text style={styles.upcomingText}>UPCOMING</Text>
         </View>
-        <Icon name="chevron-forward" size={20} color="#666" />
+        <Icon name="chevron-forward" size={20} color="#A2A2A2" />
       </View>
       <View style={styles.appointmentDetails}>
         <View style={styles.doctorInfo}>
           <View>
-            <Text style={styles.doctorName}>Laurie Simons</Text>
-            <Text style={styles.doctorTitle}>MD, DipABLM</Text>
+            <View style={styles.doctorSubInfo}>
+              <Text style={styles.doctorName}>Laurie Simons</Text>
+              <Text style={styles.doctorTitle}>MD, DipABLM</Text>
+            </View>
             <Text style={styles.speciality}>Internal medicine</Text>
             <Text style={styles.appointmentTime}>
               Thu, December 21, 2024 | 10:00 AM PST
@@ -112,93 +153,86 @@ const HomeScreen = () => {
   const renderHealthOverview = () => (
     <View style={styles.overviewSection}>
       <Text style={styles.sectionTitle}>Health Overview</Text>
-      <ScrollView 
-        horizontal 
+      <ScrollView
+        horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.overviewCards}
       >
-        <TouchableOpacity 
+        <TouchableOpacity
           style={[styles.overviewCard, styles.stepsCard]}
           onPress={() => navigation.navigate('Steps')}
         >
           <Text style={styles.overviewLabel}>Steps</Text>
+          <Text style={styles.stepsUpdated}>{stepsLastUpdated}</Text>
           <Text style={styles.overviewValue}>{steps}</Text>
-          <Text style={styles.overviewUpdated}>{stepsLastUpdated}</Text>
-          <Icon name="chevron-forward" size={20} color="#666" style={styles.cardArrow} />
+          <Icon name="chevron-forward" size={20} color="#A0B8E6" style={styles.cardArrow} />
         </TouchableOpacity>
 
-        <TouchableOpacity 
+        <TouchableOpacity
           style={[styles.overviewCard, styles.bmiCard]}
           onPress={() => navigation.navigate('BMI')}
         >
           <Text style={styles.overviewLabel}>BMI</Text>
-          <View style={styles.bmiValue}>
-            <Text style={styles.overviewValue}>{bmi}</Text>
-            <Text style={styles.bmiUnit}>kg/m²</Text>
+          <Text style={styles.bmiUpdated}>{bmiLastUpdated}</Text>
+          <View style={styles.valueContainer}>
+            <Text style={styles.bmiValue}>{bmi}</Text>
+            {bmi !== '-' && <Text style={styles.bmiUnit}>kg/m²</Text>}
           </View>
-          <Text style={styles.overviewUpdated}>{bmiLastUpdated}</Text>
-          <Icon name="chevron-forward" size={20} color="#666" style={styles.cardArrow} />
+          <Icon name="chevron-forward" size={20} color="#CDD47A" style={styles.cardArrow} />
         </TouchableOpacity>
 
-        <TouchableOpacity 
+        <TouchableOpacity
           style={[styles.overviewCard, styles.sleepCard]}
           onPress={() => navigation.navigate('Sleep')}
         >
           <Text style={styles.overviewLabel}>Sleep</Text>
-          <View style={styles.sleepValue}>
-            <Text style={styles.overviewValue}>{sleep}</Text>
-            <Text style={styles.sleepUnit}>hours</Text>
+          <Text style={styles.sleepUpdated}>{sleepLastUpdated}</Text>
+          <View style={styles.valueContainer}>
+            <Text style={styles.sleepValue}>{sleep}</Text>
+            {sleep !== '-' && <Text style={styles.sleepUnit}>hours</Text>}
           </View>
-          <Text style={styles.overviewUpdated}>{sleepLastUpdated}</Text>
-          <Icon name="chevron-forward" size={20} color="#666" style={styles.cardArrow} />
+          <Icon name="chevron-forward" size={20} color="#D3B47B" style={styles.cardArrow} />
         </TouchableOpacity>
       </ScrollView>
     </View>
   );
 
-  const renderTodos = () => (
-    <View style={styles.todosSection}>
-      <Text style={styles.sectionTitle}>Let's check off your to-dos</Text>
-      <Text style={styles.todoProgress}>1/4 Completed</Text>
-      <View style={styles.progressIndicator}>
-        <View style={styles.progressFill} />
-      </View>
-      {[
-        {
-          text: 'Achieve 30k steps every week for blood sugar',
-          date: 'Sep 5, 2024',
-          completed: false,
-        },
-        {
-          text: 'Take up health Coaching',
-          date: 'Sep 5, 2024',
-          completed: false,
-        },
-        {
-          text: 'Go to a nearby gym and workout for 30 mins',
-          date: 'Sep 5, 2024',
-          completed: false,
-        },
-        {
-          text: 'Complete 2 courses of Dr. Laurie Simons',
-          date: 'Aug 30, 2024',
-          completed: true,
-        },
-      ].map((todo, index) => (
-        <View key={index} style={styles.todoItem}>
-          <Icon
-            name={todo.completed ? 'checkmark-circle' : 'ellipse-outline'}
-            size={24}
-            color={todo.completed ? '#4CAF50' : '#666'}
-          />
-          <View style={styles.todoContent}>
-            <Text style={styles.todoText}>{todo.text}</Text>
-            <Text style={styles.todoDate}>Laurie Simons • {todo.date}</Text>
-          </View>
+  const renderTodos = () => {
+    const completedCount = todos.filter(todo => todo.completed).length;
+    const totalCount = todos.length;
+    const progressPercentage = (completedCount / totalCount) * 100;
+
+    const toggleTodo = (index) => {
+      const newTodos = [...todos];
+      newTodos[index].completed = !newTodos[index].completed;
+      setTodos(newTodos);
+    };
+
+    return (
+      <View style={styles.todosSection}>
+        <Text style={styles.sectionTitle}>Let's check off your to-dos</Text>
+        <Text style={styles.todoProgress}>{completedCount}/{totalCount} Completed</Text>
+        <View style={styles.progressIndicator}>
+          <View style={[styles.progressFill, { width: `${progressPercentage}%` }]} />
         </View>
-      ))}
-    </View>
-  );
+        {todos.map((todo, index) => (
+          <TouchableOpacity key={index} style={styles.todoItem} onPress={() => toggleTodo(index)}>
+            <View style={styles.todoIconContainer}>
+              <Icon
+                name={todo.completed ? 'checkbox' : 'square-outline'}
+                size={24}
+                color={todo.completed ? '#49A275' : '#BCBDBA'}
+              />
+            </View>
+            <View style={styles.todoContent}>
+              <Text style={[styles.todoText, todo.completed && styles.completedTodoText]}>{todo.text}</Text>
+              <Text style={styles.todoDate}>Laurie Simons • {todo.date}</Text>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -218,6 +252,7 @@ const HomeScreen = () => {
         {renderHealthScore()}
         {renderAppointment()}
         {renderHealthOverview()}
+        <View style={styles.divider} />
         {renderTodos()}
       </ScrollView>
       <View style={styles.bottomNav}>
@@ -251,7 +286,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
-    backgroundColor: '#4384E6',
+    backgroundColor: '#3D53B6',
   },
   headerLeft: {
     flexDirection: 'row',
@@ -264,8 +299,8 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   userName: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 16,
+    fontWeight: '400',
     color: '#fff',
   },
   content: {
@@ -273,38 +308,55 @@ const styles = StyleSheet.create({
   },
   scoreContainer: {
     padding: 20,
-    backgroundColor: '#4384E6',
+    backgroundColor: '#3D53B6',
   },
   scoreTitle: {
     fontSize: 16,
-    color: '#fff',
-    marginBottom: 8,
+    color: '#D5D8FF',
+    marginBottom: 20,
+    marginTop: -8,
   },
   scoreValue: {
-    fontSize: 48,
+    fontSize: 40,
     fontWeight: 'bold',
     color: '#fff',
     marginBottom: 4,
   },
   scoreSubtext: {
     fontSize: 14,
-    color: '#fff',
+    color: '#D5D8FF',
     opacity: 0.8,
-    marginBottom: 20,
+    marginBottom: 50,
   },
   progressContainer: {
     marginTop: 10,
+    position: 'relative',
   },
   progressBar: {
     height: 8,
     backgroundColor: '#ffffff40',
-    borderRadius: 4,
+    borderRadius: 12,
     overflow: 'hidden',
   },
   progress: {
     height: '100%',
-    backgroundColor: '#4CAF50',
-    borderRadius: 4,
+    width: '100%',
+    borderRadius: 12,
+  },
+  progressIndicator: {
+    width: 0,
+    height: 0,
+    backgroundColor: 'transparent',
+    borderStyle: 'solid',
+    borderLeftWidth: 12,
+    borderRightWidth: 12,
+    borderTopWidth: 12,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderTopColor: '#73FF73',
+    position: 'absolute',
+    top: -16,
+    marginLeft: -12,
   },
   progressLabels: {
     flexDirection: 'row',
@@ -317,14 +369,17 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   appointmentCard: {
-    margin: 16,
+    margin: 20,
+    marginTop: 24,
     backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ECECEC',
     borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+  },
+  cardArrow: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
   },
   appointmentHeader: {
     flexDirection: 'row',
@@ -333,15 +388,18 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   upcomingBadge: {
-    backgroundColor: '#4CAF50',
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 4,
+    borderRadius: 2,
+    backgroundColor: '#3A9B78',
+    width: 90,
+    height: 25,
   },
   upcomingText: {
     color: '#fff',
     fontSize: 12,
     fontWeight: '600',
+    textAlign: 'center',
   },
   appointmentDetails: {
     padding: 16,
@@ -355,75 +413,103 @@ const styles = StyleSheet.create({
   doctorName: {
     fontSize: 18,
     fontWeight: '600',
+    color: '#333333',
     marginBottom: 4,
   },
   doctorTitle: {
     fontSize: 14,
-    color: '#666',
-    marginBottom: 4,
+    color: '#707070',
+  },
+  doctorSubInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   speciality: {
     fontSize: 14,
-    color: '#666',
-    marginBottom: 8,
+    color: '#707070',
+    marginBottom: 16,
   },
   appointmentTime: {
     fontSize: 14,
-    color: '#666',
+    color: '#707070',
   },
   doctorAvatar: {
     width: 48,
     height: 48,
-    borderRadius: 24,
+    borderRadius: 16,
+    marginTop: -35,
   },
   overviewSection: {
-    padding: 16,
+    padding: 20,
+    marginBottom: 16,
+    marginTop: -15,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
+    color: '#333333',
     marginBottom: 16,
   },
   overviewCards: {
     paddingHorizontal: 20,
-    gap: 12,
+    gap: 10,
   },
   overviewCard: {
-    width: 150,
+    width: 155,
+    height: 129,
     padding: 16,
     borderRadius: 12,
     backgroundColor: '#fff',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+  },
+  stepsUpdated:{
+    color: '#4F65CB',
+    fontSize: 14,
+    marginBottom: 16,
+  },
+  bmiUpdated: {
+    color: '#7B8400',
+    fontSize: 14,
+    marginBottom: 16,
+  },
+  sleepUpdated: {
+    color: '#B27500',
+    fontSize: 14,
+    marginBottom: 16,
   },
   stepsCard: {
-    backgroundColor: '#F0F4FF',
+    backgroundColor: '#E9F0FF',
   },
   bmiCard: {
-    backgroundColor: '#FFFBEB',
+    backgroundColor: '#FBFFC8',
   },
   sleepCard: {
-    backgroundColor: '#F5F0FF',
+    backgroundColor: '#FFECC8',
   },
   overviewLabel: {
     fontSize: 16,
     marginBottom: 8,
+    fontWeight: '500',
   },
   overviewValue: {
     fontSize: 24,
-    fontWeight: '600',
+    fontWeight: '700',
+    color: '#4F65CB',
     marginBottom: 4,
   },
   bmiValue: {
     flexDirection: 'row',
     alignItems: 'baseline',
+    color: '#7B8400',
+    fontSize: 24,
+    fontWeight: '700',
   },
   sleepValue: {
     flexDirection: 'row',
     alignItems: 'baseline',
+    color: '#B27500',
+    fontSize: 24,
+    fontWeight: '700',
     gap: 4,
   },
   sleepUnit: {
@@ -435,60 +521,81 @@ const styles = StyleSheet.create({
     color: '#666',
     marginLeft: 4,
   },
-  overviewUpdated: {
-    fontSize: 12,
-    color: '#666',
+  valueContainer: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 4,
+    flexWrap: 'wrap',
   },
-  cardArrow: {
-    position: 'absolute',
-    top: 16,
-    right: 16,
+  divider: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#ECECEC',
+    width: '90%',
+    marginLeft: '5%',
+    marginRight: '5%',
+    marginBottom: 16,
   },
   todosSection: {
     padding: 16,
   },
   todoProgress: {
     fontSize: 14,
-    color: '#666',
+    color: '#707070',
     marginBottom: 8,
   },
   progressIndicator: {
-    height: 4,
-    backgroundColor: '#E0E0E0',
-    borderRadius: 2,
+    height: 13,
+    backgroundColor: '#F1F8F4',
+    borderRadius: 24,
     marginBottom: 20,
+    overflow: 'hidden',
   },
   progressFill: {
     width: '25%',
     height: '100%',
-    backgroundColor: '#4CAF50',
-    borderRadius: 2,
+    backgroundColor: '#77C69F',
+    borderRadius: 24,
   },
   todoItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    borderWidth: 1,
+    borderColor: '#ECECEC',
+    marginBottom: 16,
+    borderRadius: 12,
   },
   todoContent: {
-    marginLeft: 12,
     flex: 1,
+    padding: 8,
+    alignContent: 'center',
   },
   todoText: {
     fontSize: 16,
+    fontWeight: '500',
     marginBottom: 4,
+  },
+  todoIconContainer: {
+    marginLeft: 12,
+    marginRight: 6,
+    paddingTop: 10,
   },
   todoDate: {
     fontSize: 14,
-    color: '#666',
+    color: '#707070',
+  },
+  completedTodoText: {
+    color: '#707070',
   },
   bottomNav: {
     flexDirection: 'row',
-    borderTopWidth: 1,
-    borderTopColor: '#E0E0E0',
     paddingVertical: 8,
     backgroundColor: '#fff',
+    elevation: 40,
+    shadowOffset: {width: 0, height: 2,},
+    shadowColor: '#000000',
+    shadowOpacity: 1,
+    shadowRadius: 7,
   },
   navItem: {
     flex: 1,
