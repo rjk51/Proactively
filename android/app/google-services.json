@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "281293641129",
+    "project_id": "proactively-7aa98",
+    "storage_bucket": "proactively-7aa98.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:281293641129:android:d64a3e8cc4f04c5541a0b8",
+        "android_client_info": {
+          "package_name": "com.proactively"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8R_wrqvf95ag2UZj04EcYgIksibrMYeE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -83,6 +83,7 @@ const HomeScreen = () => {
     const healthScore = 2740;
     const maxScore = 3000;
     const indicatorPosition = (healthScore / maxScore) * 100;
+  
     return (
       <View style={styles.scoreContainer}>
         <Text style={styles.scoreTitle}>Health Score</Text>
@@ -91,20 +92,22 @@ const HomeScreen = () => {
           This score is for information purposes only.
         </Text>
         <View style={styles.progressContainer}>
-          <View style={styles.progressBar}>
-            <LinearGradient
-              colors={['#FF9B9B', '#FFB178', '#FFD178', '#E4FF84', '#73FF73']}
-              start={{x: 0, y: 0}}
-              end={{x: 1, y: 0}}
-              style={[styles.progress]}
-            />
-          </View>
           <View
             style={[
               styles.progressIndicator,
-              { left: `${indicatorPosition}%` }
+              { left: `${indicatorPosition}%` },
             ]}
-          />
+          >
+            <Icon name="caret-down" size={20} color="#FF5733" />
+          </View>
+          <View style={styles.progressBar}>
+            <LinearGradient
+              colors={['#FF9B9B', '#FFB178', '#FFD178', '#E4FF84', '#73FF73']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.progress}
+            />
+          </View>
           <View style={styles.progressLabels}>
             <Text style={styles.progressLabel}>0</Text>
             <Text style={styles.progressLabel}>600</Text>
@@ -212,7 +215,7 @@ const HomeScreen = () => {
       <View style={styles.todosSection}>
         <Text style={styles.sectionTitle}>Let's check off your to-dos</Text>
         <Text style={styles.todoProgress}>{completedCount}/{totalCount} Completed</Text>
-        <View style={styles.progressIndicator}>
+        <View style={styles.todoProgressIndicator}>
           <View style={[styles.progressFill, { width: `${progressPercentage}%` }]} />
         </View>
         {todos.map((todo, index) => (
@@ -325,18 +328,19 @@ const styles = StyleSheet.create({
   scoreSubtext: {
     fontSize: 14,
     color: '#D5D8FF',
-    opacity: 0.8,
-    marginBottom: 50,
+    marginBottom: 30,
   },
   progressContainer: {
-    marginTop: 10,
+    marginTop: 16,
     position: 'relative',
+    backgroundColor: 'transparent',
   },
   progressBar: {
-    height: 8,
+    height: 15,
     backgroundColor: '#ffffff40',
-    borderRadius: 12,
+    borderRadius: 51,
     overflow: 'hidden',
+    position: 'relative',
   },
   progress: {
     height: '100%',
@@ -344,19 +348,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   progressIndicator: {
-    width: 0,
-    height: 0,
-    backgroundColor: 'transparent',
-    borderStyle: 'solid',
-    borderLeftWidth: 12,
-    borderRightWidth: 12,
-    borderTopWidth: 12,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderTopColor: '#73FF73',
     position: 'absolute',
-    top: -16,
-    marginLeft: -12,
+    top: -20,
+    transform: [{ translateX: -10 }],
   },
   progressLabels: {
     flexDirection: 'row',
@@ -365,8 +359,7 @@ const styles = StyleSheet.create({
   },
   progressLabel: {
     fontSize: 12,
-    color: '#fff',
-    opacity: 0.8,
+    color: '#C2D3FF',
   },
   appointmentCard: {
     margin: 20,
@@ -543,7 +536,7 @@ const styles = StyleSheet.create({
     color: '#707070',
     marginBottom: 8,
   },
-  progressIndicator: {
+  todoProgressIndicator: {
     height: 13,
     backgroundColor: '#F1F8F4',
     borderRadius: 24,
