@@ -1,4 +1,4 @@
-import React,{ useEffect, useState } from 'react';
+import React,{ useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,8 @@ import {
   ScrollView,
   TouchableOpacity,
   SafeAreaView,
+  Animated,
+  Dimensions
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
@@ -21,6 +23,8 @@ const HomeScreen = () => {
   const [stepsLastUpdated, setStepsLastUpdated] = useState('');
   const [bmi, setBmi] = useState('-');
   const [bmiLastUpdated, setBmiLastUpdated] = useState('');
+
+  const animatedValue = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation();
   const [todos, setTodos] = useState([
     {
@@ -53,6 +57,10 @@ const HomeScreen = () => {
     return unsubscribe;
   }, [navigation]);
 
+  useEffect(() => {
+    startAnimation();
+  }, []);
+
   const loadHealthData = async () => {
     try {
       const storedSteps = await AsyncStorage.getItem('steps');
@@ -79,6 +87,25 @@ const HomeScreen = () => {
     }
   };
 
+  const startAnimation = () => {
+    const screenWidth = Dimensions.get('window').width; // Replace with `Dimensions.get('window').width` for dynamic width
+
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(animatedValue, {
+          toValue: screenWidth, // Move to the right
+          duration: 8000, // Adjust speed
+          useNativeDriver: true,
+        }),
+        Animated.timing(animatedValue, {
+          toValue: 0, // Move back to the left
+          duration: 0,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  };
+
   const renderHealthScore = () => {
     const healthScore = 2740;
     const maxScore = 3000;
@@ -86,6 +113,15 @@ const HomeScreen = () => {
   
     return (
       <View style={styles.scoreContainer}>
+        <Animated.Image
+          source={require('../assets/background.png')} // Replace with your image
+          style={[
+            styles.movingImage,
+            {
+              transform: [{ translateX: animatedValue }],
+            },
+          ]}
+        />
         <Text style={styles.scoreTitle}>Health Score</Text>
         <Text style={styles.scoreValue}>{healthScore.toLocaleString()}</Text>
         <Text style={styles.scoreSubtext}>
@@ -98,7 +134,7 @@ const HomeScreen = () => {
               { left: `${indicatorPosition}%` },
             ]}
           >
-            <Icon name="caret-down" size={20} color="#FF5733" />
+            <Icon name="caret-down" size={25} color="#91DE86" />
           </View>
           <View style={styles.progressBar}>
             <LinearGradient
@@ -240,13 +276,11 @@ const HomeScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Image
-            source={require('../assets/profile-avatar.png')}
-            style={styles.avatar}
-          />
-          <Text style={styles.userName}>Ethan Harkinson</Text>
-        </View>
+        <Image
+          source={require('../assets/profile-avatar.png')}
+          style={styles.avatar}
+        />
+        <Text style={styles.userName}>Ethan Harkinson</Text>
         <TouchableOpacity>
           <Icon name="notifications-outline" size={24} color="#fff" />
         </TouchableOpacity>
@@ -291,15 +325,10 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#3D53B6',
   },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   avatar: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    marginRight: 12,
   },
   userName: {
     fontSize: 16,
@@ -312,6 +341,8 @@ const styles = StyleSheet.create({
   scoreContainer: {
     padding: 20,
     backgroundColor: '#3D53B6',
+    overflow: 'hidden', 
+    position: 'relative',
   },
   scoreTitle: {
     fontSize: 16,
@@ -329,6 +360,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#D5D8FF',
     marginBottom: 30,
+  },
+  movingImage: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: 200,
+    height: 200,
+    opacity: 0.7,
   },
   progressContainer: {
     marginTop: 16,
@@ -349,7 +388,7 @@ const styles = StyleSheet.create({
   },
   progressIndicator: {
     position: 'absolute',
-    top: -20,
+    top: -23,
     transform: [{ translateX: -10 }],
   },
   progressLabels: {
@@ -363,7 +402,7 @@ const styles = StyleSheet.create({
   },
   appointmentCard: {
     margin: 20,
-    marginTop: 24,
+    marginTop: 28,
     backgroundColor: '#fff',
     borderWidth: 1,
     borderColor: '#ECECEC',
@@ -445,7 +484,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   overviewCards: {
-    paddingHorizontal: 20,
     gap: 10,
   },
   overviewCard: {
